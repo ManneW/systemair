@@ -14,6 +14,7 @@ ATTRIBUTION = "Data provided by Systemair SAVE Connect."
 CONF_MODEL = "model"
 CONF_DEVICE_PROFILE = "device_profile"
 CONF_SLAVE_ID = "slave_id"
+CONF_FRAMING = "framing"
 CONF_API_TYPE = "api_type"
 CONF_WEB_API_MAX_REGISTERS = "web_api_max_registers"
 CONF_UPDATE_INTERVAL = "update_interval"
@@ -25,6 +26,11 @@ CONF_DEVICE_ID = "device_id"
 CONF_DEVICE_NAME = "device_name"
 DEFAULT_PORT = 502
 DEFAULT_SLAVE_ID = 1
+
+# Framing for the Modbus TCP connection type
+FRAMING_TCP = "tcp"  # Standard Modbus TCP (MBAP header), e.g. IAM or a Modbus TCP gateway
+FRAMING_RTU_OVER_TCP = "rtu_over_tcp"  # Raw Modbus RTU frames over TCP, e.g. a transparent RS485-to-Ethernet converter
+DEFAULT_FRAMING = FRAMING_TCP
 DEFAULT_WEB_API_MAX_REGISTERS = 70
 DEFAULT_UPDATE_INTERVAL = 60
 DEFAULT_ENABLE_ALARM_DETAILS = True

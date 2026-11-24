@@ -10,10 +10,11 @@ from typing import Any, NoReturn
 import aiohttp
 import async_timeout
 import orjson
+from pymodbus import FramerType
 from pymodbus.client import AsyncModbusSerialClient, AsyncModbusTcpClient
 from pymodbus.exceptions import ConnectionException, ModbusIOException
 
-from .const import LOGGER
+from .const import FRAMING_RTU_OVER_TCP, FRAMING_TCP, LOGGER
 from .modbus import ModbusParameter
 from .profiles.base import ReadBlock
 from .profiles.save import SAVE_PROFILE
@@ -137,11 +138,15 @@ class SystemairModbusClient(SystemairClientBase):
         alarm_detail_blocks: tuple[tuple[int, int], ...] | None = None,
         alarm_history_blocks: tuple[tuple[int, int], ...] | None = None,
         test_register: int | None = None,
+        framing: str = FRAMING_TCP,
     ) -> None:
         """Initialize the Modbus client."""
         self._host = host
         self._port = port
         self._timeout = timeout
+        # RTU over TCP: raw RTU frames (with CRC) over a TCP socket, as used by
+        # transparent RS485-to-Ethernet converters without a Modbus gateway mode.
+        self._framer = FramerType.RTU if framing == FRAMING_RTU_OVER_TCP else FramerType.SOCKET
         self.slave_id = slave_id
         self.read_blocks, self.alarm_detail_blocks, self.alarm_history_blocks, self.test_register = _resolve_profile_defaults(
             read_blocks=read_blocks,
@@ -196,8 +201,8 @@ class SystemairModbusClient(SystemairClientBase):
         if self._client and self._client.connected:
             return
 
-        LOGGER.debug("Connecting to Modbus device at %s:%s", self._host, self._port)
-        self._client = AsyncModbusTcpClient(host=self._host, port=self._port, timeout=self._timeout)
+        LOGGER.debug("Connecting to Modbus device at %s:%s (framer: %s)", self._host, self._port, self._framer)
+        self._client = AsyncModbusTcpClient(host=self._host, port=self._port, framer=self._framer, timeout=self._timeout)
         if not await self._client.connect():
             msg = f"Could not connect to VSR unit at {self._host}:{self._port}"
             raise ModbusConnectionError(msg)

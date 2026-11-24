@@ -34,6 +34,7 @@ from .const import (
     CONF_ENABLE_ALARM_DETAILS,
     CONF_ENABLE_ALARM_HISTORY,
     CONF_EXTRACT_AIRFLOW_MAX,
+    CONF_FRAMING,
     CONF_MODEL,
     CONF_PARITY,
     CONF_SERIAL_PORT,
@@ -44,6 +45,7 @@ from .const import (
     CONF_WEB_API_MAX_REGISTERS,
     DEFAULT_BAUDRATE,
     DEFAULT_BYTESIZE,
+    DEFAULT_FRAMING,
     DEFAULT_PARITY,
     DEFAULT_PORT,
     DEFAULT_SERIAL_PORT,
@@ -52,6 +54,8 @@ from .const import (
     DEFAULT_UPDATE_INTERVAL,
     DEFAULT_WEB_API_MAX_REGISTERS,
     DOMAIN,
+    FRAMING_RTU_OVER_TCP,
+    FRAMING_TCP,
     LOGGER,
     MODEL_SPECS,
     SERIAL_BAUDRATES,
@@ -190,6 +194,7 @@ class SystemairVSRConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 host=user_input[CONF_HOST],
                 port=user_input[CONF_PORT],
                 slave_id=user_input[CONF_SLAVE_ID],
+                framing=user_input.get(CONF_FRAMING, DEFAULT_FRAMING),
             )
             try:
                 await client.start()
@@ -207,6 +212,7 @@ class SystemairVSRConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             host=user_input[CONF_HOST],
             port=user_input[CONF_PORT],
             slave_id=user_input[CONF_SLAVE_ID],
+            framing=user_input.get(CONF_FRAMING, DEFAULT_FRAMING),
             **_profile_client_kwargs(profile_id),
         )
         if not await client.test_connection():
@@ -402,6 +408,15 @@ class SystemairVSRConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     vol.Required(CONF_HOST): selector.TextSelector(),
                     vol.Required(CONF_PORT, default=DEFAULT_PORT): vol.Coerce(int),
                     vol.Required(CONF_SLAVE_ID, default=DEFAULT_SLAVE_ID): vol.Coerce(int),
+                    vol.Required(CONF_FRAMING, default=DEFAULT_FRAMING): selector.SelectSelector(
+                        selector.SelectSelectorConfig(
+                            options=[
+                                selector.SelectOptionDict(value=FRAMING_TCP, label="Modbus TCP"),
+                                selector.SelectOptionDict(value=FRAMING_RTU_OVER_TCP, label="Modbus RTU over TCP"),
+                            ],
+                            mode=selector.SelectSelectorMode.DROPDOWN,
+                        )
+                    ),
                     vol.Required(CONF_DEVICE_PROFILE, default=DEVICE_PROFILE_AUTO): selector.SelectSelector(
                         selector.SelectSelectorConfig(
                             options=_profile_selector_options(API_TYPE_MODBUS_TCP),

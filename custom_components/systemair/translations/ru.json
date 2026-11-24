@@ -10,11 +10,12 @@
             },
             "modbus_tcp": {
                 "title": "Настройка Modbus TCP",
-                "description": "Введите сетевые параметры для подключения к модулю Systemair IAM. Устройство должно быть доступно по Modbus TCP.",
+                "description": "Введите сетевые параметры для подключения к модулю Systemair IAM. Устройство должно быть доступно по Modbus TCP. Выберите «Modbus RTU over TCP» для прозрачных преобразователей RS485–Ethernet без режима шлюза Modbus TCP.",
                 "data": {
                     "host": "IP-адрес",
                     "port": "Порт",
                     "slave_id": "Slave ID",
+                    "framing": "Тип кадрирования",
                     "device_profile": "Профиль устройства",
                     "model": "Модель устройства"
                 }

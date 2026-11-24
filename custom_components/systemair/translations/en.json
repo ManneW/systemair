@@ -10,11 +10,12 @@
             },
             "modbus_tcp": {
                 "title": "Modbus TCP Configuration",
-                "description": "Enter the IP address of your Systemair IAM module. The device must be accessible via Modbus TCP.",
+                "description": "Enter the IP address of your Systemair IAM module. The device must be accessible via Modbus TCP. Choose \"Modbus RTU over TCP\" for transparent RS485-to-Ethernet converters without a Modbus TCP gateway mode.",
                 "data": {
                     "host": "IP Address",
                     "port": "Port",
                     "slave_id": "Slave ID",
+                    "framing": "Framing",
                     "device_profile": "Device Profile",
                     "model": "Ventilation Unit Model"
                 }
